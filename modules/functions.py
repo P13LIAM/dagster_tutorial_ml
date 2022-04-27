@@ -82,18 +82,18 @@ def build_feature_frame(context, dfe):
     return features_df, day_df
 
 @op(out={"train_df": Out(), "test_df": Out(), "day_train": Out(), "day_test": Out()})
-def split_data(context, features_df: pd.DataFrame, day_df: pd.DataFrame):
-    train_size = int(len(features_df) * 0.8)
+def split_data(context, features_df: pd.DataFrame, day_df: pd.DataFrame, fraction: float):
+    train_size = int(len(features_df) * fraction)
 
     train_df, test_df = features_df[:train_size], features_df[train_size:]
     day_train, day_test = day_df[:train_size], day_df[train_size:]
     return train_df, test_df, day_train, day_test
 
 @op
-def train_scaler(context, train_df):
+def train_scaler(context, train_df, scaler_name):
     scaler = MinMaxScaler(feature_range=(-1, 1))
     scaler.fit(train_df)
-    dump(scaler, open('SolarForecastScaler.pkl', 'wb'))
+    dump(scaler, open(f'{scaler_name}.pkl', 'wb'))
 
     return scaler
 
@@ -130,7 +130,7 @@ def descale(descaler: MinMaxScaler, values):
     return descaler.inverse_transform(values_2D).flatten()
 
 @op
-def create_mlp_model(context, X_train):
+def create_mlp_model(context, X_train, optimizer):
     K.clear_session()
     model = Sequential()
     model.add(Dropout(0.3, input_shape = (X_train.shape[1],)))
@@ -138,20 +138,20 @@ def create_mlp_model(context, X_train):
     model.add(Dense(12, activation='relu'))
     model.add(Dense(12, activation='relu'))
     model.add(Dense(1))
-    model.compile(loss='mean_squared_error', optimizer='adam',
+    model.compile(loss='mean_squared_error', optimizer=optimizer,
                   metrics=[RootMeanSquaredError()])
     return model
 
 @op
-def train_model(context, X_train, y_train, X_test, y_test, model):
+def train_model(context, X_train, y_train, X_test, y_test, model, num_epochs, num_batch_size, model_name):
     history = model.fit(X_train, y_train,
-                        epochs=5,
-                        batch_size=64,
+                        epochs=num_epochs,
+                        batch_size=num_batch_size,
                         validation_data=(X_test, y_test),
                         callbacks=[EarlyStopping(patience=5, restore_best_weights=True)]
                         )
 
-    model.save('Forecast-MLP.h5')
+    model.save(f'{model_name}.h5')
 
     return model
 

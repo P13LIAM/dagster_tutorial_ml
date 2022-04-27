@@ -1,0 +1,29 @@
+ops:
+  create_dataframe:
+    inputs:
+      dfe_path:
+        value: "https://drive.google.com/uc?id=1UVqszUg3yp5TJjmT967XYz3XjUzhp_G9"
+      dfuv_path:
+        value: "https://drive.google.com/uc?id=1GdPF_f41I-Q7iL59tC-LXOXP2xSRWIPt"
+      dftemp_path:
+        value: "https://drive.google.com/uc?id=1x3ygOAulhTE6j1Dmns-a4EqP_rF9CPbb"
+  split_data:
+    inputs:
+      fraction:
+        value: 0.75
+  train_scaler:
+    inputs:
+      scaler_name:
+        value: "scaler_huhu"
+  create_mlp_model:
+    inputs:
+        optimizer:
+          value: "adam"
+  train_model:
+    inputs:
+      num_epochs:
+        value: 5
+      num_batch_size:
+        value: 64
+      model_name:
+        value: "model_huhu"
