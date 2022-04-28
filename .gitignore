@@ -5,6 +5,12 @@ __pycache__/
 
 .idea
 
+.telemetry/
+history/
+logs/
+schedules/
+storage/
+
 # C extensions
 *.so
 

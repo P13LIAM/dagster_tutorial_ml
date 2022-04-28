@@ -2,4 +2,8 @@
 
 run command in terminal
 
-"python -m dagit -f script.py"
+"dagster-daemon run"
+
+run command in other terminal
+
+"dagit"
